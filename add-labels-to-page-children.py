@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
 import sys
 import os
 from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import unquote_plus
 from atlassian import Confluence
 
 def obtain_confluence_pat(path='~/.ConfluencePAT'):
@@ -58,7 +60,7 @@ if __name__ == '__main__':
         base_cf_url = base_url(cf_page_url)
         cf = Confluence(base_cf_url, token = obtain_confluence_pat())
         
-        page_id  = get_id_for_url(cf_page_url)
+        page_id  = get_id_for_url(cf_page_url,cf_instance=cf)
         
         tags = []
         while True:
