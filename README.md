@@ -10,3 +10,6 @@ This package depends on `atlassian-python-api`.
 
 # Installation 
 TBW
+
+# License
+As indicated in the LICENSE file, this project is under a BSD 3-clause license.
