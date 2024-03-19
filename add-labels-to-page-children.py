@@ -4,16 +4,35 @@ import os
 from urllib.parse import urlsplit, urlunsplit
 from urllib.parse import unquote_plus
 from atlassian import Confluence
+from configparser import ConfigParser
 
-def obtain_confluence_pat(path='~/.ConfluencePAT'):
+def ConfluenceInstance(base_cf_url,path='~/.atlassianPAT'):
+    return Confluence(base_cf_url, token = obtain_confluence_pat(path, confluence_url=base_cf_url))
+    
+def get_pat_from_keyboard(prompt="Confluence Personal Access Token: "):
+    from getpass import getpass
+    return getpass(prompt=prompt)
+    
+
+def obtain_confluence_pat(path='~/.atlassianPAT', confluence_url=None):
     confluence_PAT_filename = os.path.expanduser(path)
     confluence_PAT = None
     if os.path.exists(confluence_PAT_filename):
         with open(confluence_PAT_filename, "r") as pat_file:
-            confluence_PAT = pat_file.readline()
+            try:
+                parser = ConfigParser()
+                parser.read_file(pat_file)
+                confluence_key = urlsplit(confluence_url).netloc
+                confluence_PAT = parser['confluence'][confluence_key]
+            except MissingSectionHeaderError:
+                # Not a config file; try as a patFile
+                pat_file.seek(0)
+                confluence_PAT = pat_file.readline().rstrip("\n")
+            except:
+                # URL not in file, other exceptions
+                confluence_PAT = get_pat_from_keyboard()
     else:
-        from getpass import getpass
-        confluence_PAT = getpass(prompt="Confluence Personal Access Token")
+        confluence_PAT = get_pat_from_keyboard()
 
     return confluence_PAT
 
@@ -58,7 +77,7 @@ if __name__ == '__main__':
     if (is_valid_url(cf_page_url)):
         
         base_cf_url = base_url(cf_page_url)
-        cf = Confluence(base_cf_url, token = obtain_confluence_pat())
+        cf = ConfluenceInstance(base_cf_url, path='~/.atlassianPAT')
         
         page_id  = get_id_for_url(cf_page_url,cf_instance=cf)
         
