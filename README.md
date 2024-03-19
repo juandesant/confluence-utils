@@ -20,7 +20,7 @@ TBW
 One of two files need to exist for these tools to work:
 
 1. A `.confluencePAT` file in the user's home directory, which contains a Personal Access Token for the only Confluence instance to be used with this tool. The format of this file is just a plain text file whose only content is the PAT.
-2. An `.atlassian` file in the user's home directory, which is a configuration file, readable by Python's `ConfigParser`, and which can have sections for Confluence and Jira, and within each sections PATs for different instances. See an example of that file below.
+2. An `.atlassianPAT` file in the user's home directory, which is a configuration file, readable by Python's [`ConfigParser`](https://docs.python.org/3/library/configparser.html "Python 3 Documentation: configparser — Configuration file parser"), and which can have sections for Confluence and Jira, and within each sections PATs for different instances. See an example of that file below.
  
    ```ini
    [DEFAULT]
