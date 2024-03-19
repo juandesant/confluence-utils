@@ -40,10 +40,20 @@ def process_tags(page_id, cf_instance=None, tags=[]):
     for tag in tags:
         cf_instance.set_page_label(page_id, tag)
 
-def add_tags_to_page_children(page_id, cf_instance=None, tags=[]):
+def add_tags_to_page_children(page_id, cf_instance=None, tags=[],follow_children=False,depth=None):
+    """"""
     page_children = cf_instance.get_child_pages(page_id=page_id)
     for children in page_children:
         process_tags(children['id'], cf_instance=cf_instance, tags=tags)
+        if follow_children:
+            if type(depth) == type(None):
+                add_tags_to_page_children(children['id'], cf_instance=cf_instance, tags=tags,follow_children=follow_children,depth=None)
+            elif type(depth) == type(0) and depth > 0:
+                add_tags_to_page_children(children['id'], cf_instance=cf_instance, tags=tags,follow_children=follow_children,depth=depth-1)
+            elif type(depth) == type(0) and depth == 0:
+                pass
+            else:
+                pass
 
 def get_id_for_url(url="", cf_instance=None):
     url_items = url.split("/")
@@ -89,4 +99,17 @@ if __name__ == '__main__':
             else:
                 break
         
-        add_tags_to_page_children(page_id, cf_instance=cf, tags=tags)
+        follow_children = False
+        follow_children_input = input("Add tags to the full hierarchy? (True/False): ").lower()
+        if follow_children_input[0] == 'y' or follow_children_input[0] == 't':
+            follow_children = True
+        
+        depth = None
+        if follow_children:
+            depth_input = input("To which additonal depth should the hierarchy be followed? (all for all levels, numbers indicate additoinal number of levels below this one): ") 
+            try:
+                depth = int(str(depth_input))
+            except:
+                depth = None
+        
+        add_tags_to_page_children(page_id, cf_instance=cf, tags=tags, follow_children=follow_children, depth=depth)
